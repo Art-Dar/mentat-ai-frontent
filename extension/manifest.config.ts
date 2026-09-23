@@ -19,4 +19,10 @@ export default defineManifest({
   ],
   permissions: ['storage', 'activeTab', 'contextMenus', 'scripting'],
   host_permissions: ['<all_urls>'],
+  icons: {
+    16: 'public/icons/icon16.png',
+    32: 'public/icons/icon32.png',
+    48: 'public/icons/icon48.png',
+    128: 'public/icons/icon128.png',
+},
 })
