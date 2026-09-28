@@ -5,7 +5,8 @@
     "strict": true,
     "moduleResolution": "bundler",
     "types": ["chrome"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noEmit": true
   },
   "include": ["src"]
 }
