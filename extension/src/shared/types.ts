@@ -9,7 +9,17 @@ export interface ExtractedPage {
   method: 'readability' | 'fallback'
 }
 
-export type ExtensionMessage = { type: 'EXTRACT_PAGE' }
+export interface SerializedSelection {
+  text: string
+  url: string
+  title: string
+  lang: string | null
+  capturedAt: number
+}
+
+export type ExtensionMessage =
+  | { type: 'EXTRACT_PAGE' }
+  | { type: 'SELECTION_CAPTURED'; selection: SerializedSelection }
 
 export type ExtractPageResponse =
   | { ok: true; page: ExtractedPage }
