@@ -1,8 +1,14 @@
 import type { ExtensionMessage } from '../shared/types'
 
-chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender) => {
-  if (message.type !== 'SELECTION_CAPTURED') return
+chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendResponse) => {
+  if (message.type === 'SELECTION_CAPTURED') {
+    console.log('selection captured', sender.tab?.id, message.selection)
+    return
+  }
 
-  // TODO: persist the selection once the save flow exists
-  console.log('selection captured', sender.tab?.id, message.selection)
+  if (message.type === 'SAVE_SELECTION') {
+    // TODO: persist the selection once the backend save flow exists
+    console.log('save requested', sender.tab?.id, message.selection)
+    sendResponse({ ok: true })
+  }
 })

@@ -20,6 +20,7 @@ export interface SerializedSelection {
 export type ExtensionMessage =
   | { type: 'EXTRACT_PAGE' }
   | { type: 'SELECTION_CAPTURED'; selection: SerializedSelection }
+  | { type: 'SAVE_SELECTION'; selection: SerializedSelection }
 
 export type ExtractPageResponse =
   | { ok: true; page: ExtractedPage }
