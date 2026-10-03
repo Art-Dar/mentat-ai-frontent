@@ -17,7 +17,7 @@ export default defineManifest({
       js: ['src/content/index.ts'],
     },
   ],
-  permissions: ['storage', 'activeTab', 'contextMenus', 'scripting', 'alarms'],
+  permissions: ['storage', 'activeTab', 'contextMenus', 'scripting'],
   host_permissions: ['<all_urls>'],
   icons: {
     16: 'public/icons/icon16.png',
