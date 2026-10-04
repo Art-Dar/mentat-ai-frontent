@@ -6,14 +6,15 @@ const toast = document.getElementById('toast') as HTMLDivElement
 
 let toastTimer: number | undefined
 
-function showToast(text: string, kind: 'success' | 'error') {
+function showToast(text: string, kind: 'success' | 'error' | 'queued') {
   toast.textContent = text
   toast.className = `show ${kind}`
   clearTimeout(toastTimer)
   toastTimer = window.setTimeout(() => toast.classList.remove('show'), 2500)
 }
 
-async function savePage() {
+// Returns true if saved, false if queued for a later retry; throws if neither
+async function savePage(): Promise<boolean> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   if (!tab?.id) throw new Error('No active tab')
 
@@ -27,14 +28,16 @@ async function savePage() {
     type: 'SAVE_PAGE',
     page: extracted.page,
   } satisfies ExtensionMessage)
-  if (!saved?.ok) throw new Error(saved?.error ?? 'Save failed')
+  if (saved?.ok) return true
+  if (saved?.queued) return false
+  throw new Error(saved?.error ?? 'Save failed')
 }
 
 saveButton.addEventListener('click', async () => {
   saveButton.disabled = true
   try {
-    await savePage()
-    showToast('Saved to brain ✓', 'success')
+    if (await savePage()) showToast('Saved to brain ✓', 'success')
+    else showToast('Offline: queued, will retry later', 'queued')
   } catch {
     showToast("Couldn't save this page", 'error')
   } finally {

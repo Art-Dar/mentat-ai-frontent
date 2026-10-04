@@ -40,4 +40,7 @@ export interface IngestResponse {
   status: string
 }
 
-export type SaveResponse = { ok: true; documentId: string } | { ok: false; error: string }
+export type SaveResponse =
+  | { ok: true; documentId: string }
+  // queued: the request failed but was stored locally for a later retry
+  | { ok: false; error: string; queued?: boolean }
