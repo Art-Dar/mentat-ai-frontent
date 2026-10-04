@@ -1,7 +1,7 @@
 import type { ExtensionMessage, ExtractPageResponse, SerializedSelection } from '../shared/types'
 import { extractPage } from './extract'
 import { serializeSelection } from './selection'
-import { hideSaveButton, isSaveButtonEvent, markSaved, showSaveButton } from './save-button'
+import { hideSaveButton, isSaveButtonEvent, markFailed, markSaved, showSaveButton } from './save-button'
 
 chrome.runtime.onMessage.addListener(
   (message: ExtensionMessage, _sender, sendResponse: (r: ExtractPageResponse) => void) => {
@@ -24,6 +24,7 @@ function send(message: ExtensionMessage) {
 function saveSelection(selection: SerializedSelection) {
   send({ type: 'SAVE_SELECTION', selection }).then((res) => {
     if (res?.ok) markSaved()
+    else markFailed()
   })
 }
 

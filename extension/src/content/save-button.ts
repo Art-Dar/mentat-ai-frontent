@@ -28,6 +28,7 @@ function ensureButton(): HTMLButtonElement {
     }
     button:hover { background: #4338ca; }
     button[disabled] { background: #16a34a; cursor: default; }
+    button.failed[disabled] { background: #dc2626; }
   `
 
   button = document.createElement('button')
@@ -45,8 +46,7 @@ function ensureButton(): HTMLButtonElement {
 export function showSaveButton(rect: DOMRect, onClick: () => void) {
   const btn = ensureButton()
   clickHandler = onClick
-  btn.disabled = false
-  btn.textContent = 'Save to brain'
+  resetButton(btn)
   btn.style.display = 'block'
 
   // Place below the selection, clamped to the viewport
@@ -56,11 +56,27 @@ export function showSaveButton(rect: DOMRect, onClick: () => void) {
   btn.style.left = `${left}px`
 }
 
+function resetButton(btn: HTMLButtonElement) {
+  btn.disabled = false
+  btn.classList.remove('failed')
+  btn.textContent = 'Save to brain'
+}
+
 export function markSaved() {
   if (!button) return
   button.disabled = true
   button.textContent = 'Saved ✓'
   setTimeout(hideSaveButton, 1200)
+}
+
+// Shows the error briefly, then goes back to "Save to brain" so the user can retry
+export function markFailed() {
+  if (!button) return
+  const btn = button
+  btn.disabled = true
+  btn.classList.add('failed')
+  btn.textContent = 'Not saved ✕'
+  setTimeout(() => resetButton(btn), 2000)
 }
 
 export function hideSaveButton() {
