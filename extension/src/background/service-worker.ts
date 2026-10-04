@@ -1,3 +1,4 @@
+import * as auth from '../shared/auth-storage'
 import type { ExtensionMessage, IngestPayload, SaveResponse } from '../shared/types'
 import { buildPagePayload, buildSelectionPayload, sendToIngest } from './ingest'
 
@@ -28,3 +29,6 @@ chrome.runtime.onMessage.addListener(
     }
   },
 )
+
+// Debug handle for manual testing from the service worker DevTools console
+;(globalThis as any).mentatAuth = auth

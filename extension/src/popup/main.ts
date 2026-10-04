@@ -1,3 +1,4 @@
+import * as auth from '../shared/auth-storage'
 import type { ExtensionMessage, ExtractPageResponse, SaveResponse } from '../shared/types'
 
 const saveButton = document.getElementById('save') as HTMLButtonElement
@@ -40,3 +41,6 @@ saveButton.addEventListener('click', async () => {
     saveButton.disabled = false
   }
 })
+
+// Debug handle for manual testing from the popup DevTools console
+;(globalThis as any).mentatAuth = auth
