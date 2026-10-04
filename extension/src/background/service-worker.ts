@@ -1,11 +1,41 @@
 import * as auth from '../shared/auth-storage'
-import * as queue from '../shared/retry-queue'
-import { flushRetryQueue, startSyncListeners } from './sync'
+import type { ExtensionMessage, IngestPayload, SaveResponse } from '../shared/types'
+import * as retryQueue from '../shared/retry-queue'
+import { buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
+
+function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
+  sendToIngest(payload)
+    .then((res) => sendResponse({ ok: true, documentId: res.document_id }))
+    .catch(async (e) => {
+      console.error('ingest failed', e)
+      const error = e instanceof Error ? e.message : String(e)
+      const queued = e instanceof IngestError && e.retryable
+      if (queued) await retryQueue.enqueue(payload, error)
+      sendResponse({ ok: false, error, queued })
+    })
+}
+
+chrome.runtime.onMessage.addListener(
+  (message: ExtensionMessage, sender, sendResponse: (r: SaveResponse) => void) => {
+    if (message.type === 'SELECTION_CAPTURED') {
+      console.log('selection captured', sender.tab?.id, message.selection)
+      return
+    }
+
+    if (message.type === 'SAVE_SELECTION') {
+      save(buildSelectionPayload(message.selection), sendResponse)
+      return true // keep the channel open for the async response
+    }
+
+    if (message.type === 'SAVE_PAGE') {
+      save(buildPagePayload(message.page), sendResponse)
+      return true
+    }
+  },
+)
 
 console.log('background loaded')
 
-startSyncListeners()
-
-// Debug handles for manual testing from the service worker DevTools console
+// Debug handle for manual testing from the service worker DevTools console
 ;(globalThis as any).mentatAuth = auth
-;(globalThis as any).mentatQueue = { ...queue, flushRetryQueue }
+;(globalThis as any).mentatQueue = retryQueue
