@@ -27,4 +27,17 @@ export type ExtractPageResponse =
   | { ok: true; page: ExtractedPage }
   | { ok: false; error: string }
 
-export type SaveResponse = { ok: true } | { ok: false; error: string }
+// Mirrors the backend's IngestRequest / IngestResponse (app/schemas/ingest.py)
+export interface IngestPayload {
+  source: 'article' | 'selection' | 'note'
+  text: string
+  url?: string
+  title?: string
+}
+
+export interface IngestResponse {
+  document_id: string
+  status: string
+}
+
+export type SaveResponse = { ok: true; documentId: string } | { ok: false; error: string }

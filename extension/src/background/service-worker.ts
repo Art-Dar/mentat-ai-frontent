@@ -1,20 +1,30 @@
-import type { ExtensionMessage } from '../shared/types'
+import type { ExtensionMessage, IngestPayload, SaveResponse } from '../shared/types'
+import { buildPagePayload, buildSelectionPayload, sendToIngest } from './ingest'
 
-chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendResponse) => {
-  if (message.type === 'SELECTION_CAPTURED') {
-    console.log('selection captured', sender.tab?.id, message.selection)
-    return
-  }
+function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
+  sendToIngest(payload)
+    .then((res) => sendResponse({ ok: true, documentId: res.document_id }))
+    .catch((e) => {
+      console.error('ingest failed', e)
+      sendResponse({ ok: false, error: e instanceof Error ? e.message : String(e) })
+    })
+}
 
-  if (message.type === 'SAVE_SELECTION') {
-    // TODO: persist the selection once the backend save flow exists
-    console.log('save requested', sender.tab?.id, message.selection)
-    sendResponse({ ok: true })
-  }
+chrome.runtime.onMessage.addListener(
+  (message: ExtensionMessage, sender, sendResponse: (r: SaveResponse) => void) => {
+    if (message.type === 'SELECTION_CAPTURED') {
+      console.log('selection captured', sender.tab?.id, message.selection)
+      return
+    }
 
-  if (message.type === 'SAVE_PAGE') {
-    // TODO: persist the page once the backend save flow exists
-    console.log('page save requested', message.page.url, message.page)
-    sendResponse({ ok: true })
-  }
-})
+    if (message.type === 'SAVE_SELECTION') {
+      save(buildSelectionPayload(message.selection), sendResponse)
+      return true // keep the channel open for the async response
+    }
+
+    if (message.type === 'SAVE_PAGE') {
+      save(buildPagePayload(message.page), sendResponse)
+      return true
+    }
+  },
+)

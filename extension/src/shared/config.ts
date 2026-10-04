@@ -1,0 +1,2 @@
+// Override per environment with VITE_API_URL in extension/.env
+export const API_BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
