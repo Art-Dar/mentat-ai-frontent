@@ -1,13 +1,17 @@
 import * as auth from '../shared/auth-storage'
 import type { ExtensionMessage, IngestPayload, SaveResponse } from '../shared/types'
-import { buildPagePayload, buildSelectionPayload, sendToIngest } from './ingest'
+import * as retryQueue from '../shared/retry-queue'
+import { buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
 
 function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
   sendToIngest(payload)
     .then((res) => sendResponse({ ok: true, documentId: res.document_id }))
-    .catch((e) => {
+    .catch(async (e) => {
       console.error('ingest failed', e)
-      sendResponse({ ok: false, error: e instanceof Error ? e.message : String(e) })
+      const error = e instanceof Error ? e.message : String(e)
+      const queued = e instanceof IngestError && e.retryable
+      if (queued) await retryQueue.enqueue(payload, error)
+      sendResponse({ ok: false, error, queued })
     })
 }
 
@@ -34,3 +38,4 @@ console.log('background loaded')
 
 // Debug handle for manual testing from the service worker DevTools console
 ;(globalThis as any).mentatAuth = auth
+;(globalThis as any).mentatQueue = retryQueue

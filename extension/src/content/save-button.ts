@@ -29,6 +29,7 @@ function ensureButton(): HTMLButtonElement {
     button:hover { background: #4338ca; }
     button[disabled] { background: #16a34a; cursor: default; }
     button.failed[disabled] { background: #dc2626; }
+    button.queued[disabled] { background: #d97706; }
   `
 
   button = document.createElement('button')
@@ -58,7 +59,7 @@ export function showSaveButton(rect: DOMRect, onClick: () => void) {
 
 function resetButton(btn: HTMLButtonElement) {
   btn.disabled = false
-  btn.classList.remove('failed')
+  btn.classList.remove('failed', 'queued')
   btn.textContent = 'Save to brain'
 }
 
@@ -76,6 +77,16 @@ export function markFailed() {
   btn.disabled = true
   btn.classList.add('failed')
   btn.textContent = 'Not saved ✕'
+  setTimeout(() => resetButton(btn), 2000)
+}
+
+// The save failed but is stored locally and will be retried
+export function markQueued() {
+  if (!button) return
+  const btn = button
+  btn.disabled = true
+  btn.classList.add('queued')
+  btn.textContent = 'Queued, will retry'
   setTimeout(() => resetButton(btn), 2000)
 }
 

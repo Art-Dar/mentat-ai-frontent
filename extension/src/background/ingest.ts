@@ -11,9 +11,17 @@ export class IngestError extends Error {
   constructor(
     message: string,
     readonly status?: number,
+    // Worth queueing for later: the same request may succeed once the problem clears
+    readonly retryable = false,
   ) {
     super(message)
   }
+}
+
+// Server-side or transient failures. Auth errors and 4xx validation errors need the user
+// (or a code change) to fix, so retrying the same request would just fail again.
+function isRetryableStatus(status: number): boolean {
+  return status >= 500 || status === 408 || status === 429
 }
 
 // The backend validates url as HTTP(S); skip things like file:// instead of failing the save
@@ -54,11 +62,15 @@ export async function sendToIngest(payload: IngestPayload): Promise<IngestRespon
       body: JSON.stringify(payload),
     })
   } catch {
-    throw new IngestError('Network error: could not reach the server')
+    throw new IngestError('Network error: could not reach the server', undefined, true)
   }
 
   if (!response.ok) {
-    throw new IngestError(`Ingest failed with status ${response.status}`, response.status)
+    throw new IngestError(
+      `Ingest failed with status ${response.status}`,
+      response.status,
+      isRetryableStatus(response.status),
+    )
   }
   return response.json()
 }
