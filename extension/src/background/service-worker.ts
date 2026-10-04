@@ -30,5 +30,7 @@ chrome.runtime.onMessage.addListener(
   },
 )
 
+console.log('background loaded')
+
 // Debug handle for manual testing from the service worker DevTools console
 ;(globalThis as any).mentatAuth = auth
