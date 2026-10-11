@@ -7,37 +7,57 @@
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <header class="header">
-    <h1 class="title">Mentat</h1>
-    <nav class="tabs" role="tablist" aria-label="Screens">
-      <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
-      <button class="tab" role="tab" id="tab-settings" data-screen="settings" aria-controls="screen-settings" type="button">Settings</button>
-    </nav>
-  </header>
+  <!-- Shown until the user is signed in -->
+  <div id="login-view" hidden>
+    <header class="header">
+      <h1 class="title">Mentat</h1>
+    </header>
+    <main class="content">
+      <form id="login-form" class="form" novalidate>
+        <p class="hint">Log in to start saving to your brain.</p>
 
-  <main class="content">
-    <section class="screen" id="screen-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
-      <textarea class="ask-input" rows="3" placeholder="Ask your second brain…" disabled></textarea>
-      <button class="primary" type="button" disabled>Ask</button>
-      <p class="hint">Asking is coming soon.</p>
-    </section>
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" spellcheck="false" />
 
-    <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
-      <dl class="settings">
-        <dt>Account</dt>
-        <dd id="auth-status">Checking…</dd>
-        <dt>Server</dt>
-        <dd id="api-url"></dd>
-        <dt>Queued saves</dt>
-        <dd id="queue-count">–</dd>
-      </dl>
-    </section>
-  </main>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" />
 
-  <footer class="footer">
-    <button id="save" class="primary" type="button">Save this page</button>
-    <div id="toast" role="status" aria-live="polite"></div>
-  </footer>
+        <button class="primary" id="login-submit" type="submit">Log in</button>
+        <p class="message" id="login-message" role="status" aria-live="polite"></p>
+      </form>
+    </main>
+  </div>
+
+  <!-- Shown once signed in -->
+  <div id="app-view" hidden>
+    <header class="header">
+      <h1 class="title">Mentat</h1>
+      <nav class="tabs" role="tablist" aria-label="Screens">
+        <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
+        <button class="tab" role="tab" id="tab-settings" data-screen="settings" aria-controls="screen-settings" type="button">Settings</button>
+      </nav>
+    </header>
+
+    <main class="content">
+      <section class="screen" id="screen-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
+        <textarea class="ask-input" rows="3" placeholder="Ask your second brain…" disabled></textarea>
+        <button class="primary" type="button" disabled>Ask</button>
+        <p class="hint">Asking is coming soon.</p>
+      </section>
+
+      <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+        <p class="hint" id="auth-status">Signed in.</p>
+        <button class="secondary" id="logout" type="button">Log out</button>
+        <p class="message" id="settings-message" role="status" aria-live="polite"></p>
+        <p class="hint">Queued saves: <span id="queue-count">–</span></p>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <button id="save" class="primary" type="button">Save this page</button>
+      <div id="toast" role="status" aria-live="polite"></div>
+    </footer>
+  </div>
 
   <script type="module" src="./main.ts"></script>
 </body>
