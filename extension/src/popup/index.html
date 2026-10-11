@@ -2,22 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Second Brain</title>
-  <style>
-    body { width: 280px; padding: 16px; font-family: sans-serif; }
-    button#save { width: 100%; padding: 8px; border: 0; border-radius: 6px; background: #4f46e5; color: #fff; font-size: 14px; cursor: pointer; }
-    button#save:disabled { opacity: 0.6; cursor: default; }
-    #toast { margin-top: 12px; padding: 8px 10px; border-radius: 6px; font-size: 13px; opacity: 0; transition: opacity 0.2s; }
-    #toast.show { opacity: 1; }
-    #toast.success { background: #dcfce7; color: #166534; }
-    #toast.error { background: #fee2e2; color: #991b1b; }
-    #toast.queued { background: #fef3c7; color: #92400e; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mentat</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <h3>Mentat</h3>
-  <button id="save" type="button">Save this page</button>
-  <div id="toast" role="status" aria-live="polite"></div>
+  <header class="header">
+    <h1 class="title">Mentat</h1>
+    <nav class="tabs" role="tablist" aria-label="Screens">
+      <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
+      <button class="tab" role="tab" id="tab-settings" data-screen="settings" aria-controls="screen-settings" type="button">Settings</button>
+    </nav>
+  </header>
+
+  <main class="content">
+    <section class="screen" id="screen-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
+      <textarea class="ask-input" rows="3" placeholder="Ask your second brain…" disabled></textarea>
+      <button class="primary" type="button" disabled>Ask</button>
+      <p class="hint">Asking is coming soon.</p>
+    </section>
+
+    <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+      <dl class="settings">
+        <dt>Account</dt>
+        <dd id="auth-status">Checking…</dd>
+        <dt>Server</dt>
+        <dd id="api-url"></dd>
+        <dt>Queued saves</dt>
+        <dd id="queue-count">–</dd>
+      </dl>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <button id="save" class="primary" type="button">Save this page</button>
+    <div id="toast" role="status" aria-live="polite"></div>
+  </footer>
+
   <script type="module" src="./main.ts"></script>
 </body>
 </html>
