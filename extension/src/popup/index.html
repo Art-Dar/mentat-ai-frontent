@@ -14,7 +14,7 @@
     </header>
     <main class="content">
       <form id="login-form" class="form" novalidate>
-        <p class="hint">Log in to start saving to your brain.</p>
+        <p class="hint" id="login-hint">Log in to start saving to your brain.</p>
 
         <label for="email">Email</label>
         <input id="email" type="email" autocomplete="username" spellcheck="false" />
@@ -22,7 +22,13 @@
         <label for="password">Password</label>
         <input id="password" type="password" autocomplete="current-password" />
 
+        <div id="confirm-field" hidden>
+          <label for="confirm-password">Repeat password</label>
+          <input id="confirm-password" type="password" autocomplete="new-password" />
+        </div>
+
         <button class="primary" id="login-submit" type="submit">Log in</button>
+        <button class="link" id="toggle-mode" type="button">Create an account</button>
         <p class="message" id="login-message" role="status" aria-live="polite"></p>
       </form>
     </main>
