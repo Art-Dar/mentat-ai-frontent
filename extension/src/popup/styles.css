@@ -64,6 +64,15 @@ body {
   font: inherit;
   cursor: pointer;
 }
+.link {
+  margin-top: 8px;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
 .google {
   width: 100%;
   margin-top: 8px;
@@ -76,6 +85,20 @@ body {
   cursor: pointer;
 }
 .google:disabled { opacity: 0.6; cursor: default; }
+.secondary-action {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+.secondary-action:disabled { opacity: 0.6; cursor: default; }
+#set-password-form { margin-bottom: 12px; }
+#set-password-form input + input { margin-top: 4px; }
 .message { min-height: 1.4em; margin: 4px 0 0; font-size: 12px; }
 .message.success { color: #166534; }
 .message.error { color: #991b1b; }
