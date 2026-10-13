@@ -28,6 +28,7 @@
         </div>
 
         <button class="primary" id="login-submit" type="submit">Log in</button>
+        <button class="google" id="google-login" type="button" hidden>Continue with Google</button>
         <button class="link" id="toggle-mode" type="button">Create an account</button>
         <p class="message" id="login-message" role="status" aria-live="polite"></p>
       </form>
@@ -53,6 +54,7 @@
 
       <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
         <p class="hint" id="auth-status">Signed in.</p>
+        <button class="google" id="google-connect" type="button" hidden>Connect Google account</button>
         <button class="secondary" id="logout" type="button">Log out</button>
         <p class="message" id="settings-message" role="status" aria-live="polite"></p>
         <p class="hint">Queued saves: <span id="queue-count">–</span></p>

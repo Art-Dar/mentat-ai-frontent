@@ -1,4 +1,5 @@
-import { login, MIN_PASSWORD_LENGTH, register } from '../shared/auth-api'
+import { login, loginWithGoogle, MIN_PASSWORD_LENGTH, register } from '../shared/auth-api'
+import { GOOGLE_ENABLED } from '../shared/config'
 
 const form = document.getElementById('login-form') as HTMLFormElement
 const hint = document.getElementById('login-hint') as HTMLElement
@@ -8,6 +9,7 @@ const confirmField = document.getElementById('confirm-field') as HTMLElement
 const confirmInput = document.getElementById('confirm-password') as HTMLInputElement
 const submitButton = document.getElementById('login-submit') as HTMLButtonElement
 const toggleButton = document.getElementById('toggle-mode') as HTMLButtonElement
+const googleButton = document.getElementById('google-login') as HTMLButtonElement
 const message = document.getElementById('login-message') as HTMLElement
 
 let signUp = false
@@ -70,6 +72,21 @@ export function initLogin(onLoggedIn: () => void) {
       confirmInput.value = ''
     } finally {
       submitButton.disabled = false
+    }
+  })
+
+  googleButton.hidden = !GOOGLE_ENABLED
+  googleButton.addEventListener('click', async () => {
+    googleButton.disabled = true
+    setMessage('')
+    try {
+      await loginWithGoogle()
+      resetLoginForm()
+      onLoggedIn()
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      googleButton.disabled = false
     }
   })
 }
