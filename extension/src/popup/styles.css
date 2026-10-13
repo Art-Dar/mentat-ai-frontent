@@ -42,9 +42,43 @@ body {
 }
 .hint { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
 
-.settings { margin: 0; }
-.settings dt { color: var(--muted); font-size: 12px; }
-.settings dd { margin: 0 0 12px; word-break: break-all; }
+
+.form { display: flex; flex-direction: column; gap: 4px; }
+.form label { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+.form .primary { margin-top: 12px; }
+[hidden] { display: none !important; }
+.secondary {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: #991b1b;
+  font: inherit;
+  cursor: pointer;
+}
+.google {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  cursor: pointer;
+}
+.google:disabled { opacity: 0.6; cursor: default; }
+.message { min-height: 1.4em; margin: 4px 0 0; font-size: 12px; }
+.message.success { color: #166534; }
+.message.error { color: #991b1b; }
 
 .footer { padding: 0 16px 16px; }
 

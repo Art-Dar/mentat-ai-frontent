@@ -1,13 +1,40 @@
-import { getAuthToken } from '../shared/auth-storage'
-import { API_BASE_URL } from '../shared/config'
+import { connectGoogle } from '../shared/auth-api'
+import { clearAuthToken } from '../shared/auth-storage'
+import { GOOGLE_ENABLED } from '../shared/config'
 import { getQueue } from '../shared/retry-queue'
 
-const authStatus = document.getElementById('auth-status') as HTMLElement
-const apiUrl = document.getElementById('api-url') as HTMLElement
+const logoutButton = document.getElementById('logout') as HTMLButtonElement
+const connectButton = document.getElementById('google-connect') as HTMLButtonElement
+const message = document.getElementById('settings-message') as HTMLElement
 const queueCount = document.getElementById('queue-count') as HTMLElement
 
+function setMessage(text: string, kind: 'success' | 'error' | '' = '') {
+  message.textContent = text
+  message.className = `message ${kind}`
+}
+
 export async function refreshSettings() {
-  apiUrl.textContent = API_BASE_URL
-  authStatus.textContent = (await getAuthToken()) ? 'Signed in' : 'Not signed in'
+  setMessage('')
   queueCount.textContent = String((await getQueue()).length)
+}
+
+export function initSettings(onLoggedOut: () => void) {
+  logoutButton.addEventListener('click', async () => {
+    await clearAuthToken()
+    onLoggedOut()
+  })
+
+  connectButton.hidden = !GOOGLE_ENABLED
+  connectButton.addEventListener('click', async () => {
+    connectButton.disabled = true
+    setMessage('')
+    try {
+      await connectGoogle()
+      setMessage('Google account connected ✓', 'success')
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Something went wrong', 'error')
+    } finally {
+      connectButton.disabled = false
+    }
+  })
 }
