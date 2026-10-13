@@ -1,9 +1,11 @@
-import { login } from '../shared/auth-api'
+import { login, loginWithGoogle } from '../shared/auth-api'
+import { GOOGLE_ENABLED } from '../shared/config'
 
 const form = document.getElementById('login-form') as HTMLFormElement
 const emailInput = document.getElementById('email') as HTMLInputElement
 const passwordInput = document.getElementById('password') as HTMLInputElement
 const submitButton = document.getElementById('login-submit') as HTMLButtonElement
+const googleButton = document.getElementById('google-login') as HTMLButtonElement
 const message = document.getElementById('login-message') as HTMLElement
 
 function setMessage(text: string) {
@@ -36,6 +38,21 @@ export function initLogin(onLoggedIn: () => void) {
       passwordInput.value = ''
     } finally {
       submitButton.disabled = false
+    }
+  })
+
+  googleButton.hidden = !GOOGLE_ENABLED
+  googleButton.addEventListener('click', async () => {
+    googleButton.disabled = true
+    setMessage('')
+    try {
+      await loginWithGoogle()
+      resetLoginForm()
+      onLoggedIn()
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      googleButton.disabled = false
     }
   })
 }
