@@ -11,13 +11,25 @@ async function storeTokenFrom(response: Response): Promise<void> {
   await saveAuthToken(data.access_token)
 }
 
+// A message, or a function that gets the server's own `detail` text (if any) and returns one
+type StatusMessage = string | ((serverDetail?: string) => string)
+
+async function serverDetail(response: Response): Promise<string | undefined> {
+  try {
+    const data = await response.json()
+    return typeof data?.detail === 'string' ? data.detail : undefined
+  } catch {
+    return undefined
+  }
+}
+
 // POSTs credentials to an auth endpoint, stores the returned token and never stores the password.
 // statusMessages maps HTTP statuses to a user-facing message.
 async function authenticate(
   path: string,
   email: string,
   password: string,
-  statusMessages: Record<number, string>,
+  statusMessages: Record<number, StatusMessage>,
   fallback: string,
 ): Promise<void> {
   let response: Response
@@ -32,7 +44,9 @@ async function authenticate(
   }
 
   if (!response.ok) {
-    throw new Error(statusMessages[response.status] ?? `${fallback} (status ${response.status})`)
+    const message = statusMessages[response.status]
+    if (typeof message === 'function') throw new Error(message(await serverDetail(response)))
+    throw new Error(message ?? `${fallback} (status ${response.status})`)
   }
   await storeTokenFrom(response)
 }
@@ -54,11 +68,36 @@ export function register(email: string, password: string): Promise<void> {
     email,
     password,
     {
-      409: 'An account with this email already exists',
+      // The server explains the case where the email belongs to a Google-only account
+      409: (detail) => detail ?? 'An account with this email already exists',
       422: `Check your email and use a password of at least ${MIN_PASSWORD_LENGTH} characters`,
     },
     'Sign up failed',
   )
+}
+
+// Lets an account that signed up with Google add email + password sign-in
+export async function setPassword(password: string): Promise<void> {
+  const token = await getAuthToken()
+  if (!token) throw new Error('Log in first')
+
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE_URL}/api/v1/auth/set-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ password }),
+    })
+  } catch {
+    throw new Error('Could not reach the server')
+  }
+
+  if (response.status === 401) throw new Error('Your session expired. Log in again.')
+  if (response.status === 409) throw new Error('You already have a password set')
+  if (response.status === 422) {
+    throw new Error(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`)
+  }
+  if (!response.ok) throw new Error(`Could not set the password (status ${response.status})`)
 }
 
 async function googleAccessToken(): Promise<string> {

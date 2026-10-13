@@ -54,6 +54,14 @@
 
       <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
         <p class="hint" id="auth-status">Signed in.</p>
+
+        <form id="set-password-form" class="form" novalidate>
+          <label for="new-password">Add password sign-in</label>
+          <input id="new-password" type="password" autocomplete="new-password" placeholder="New password" />
+          <input id="new-password-confirm" type="password" autocomplete="new-password" placeholder="Repeat password" />
+          <button class="secondary-action" id="set-password-submit" type="submit">Set password</button>
+        </form>
+
         <button class="google" id="google-connect" type="button" hidden>Connect Google account</button>
         <button class="secondary" id="logout" type="button">Log out</button>
         <p class="message" id="settings-message" role="status" aria-live="polite"></p>
