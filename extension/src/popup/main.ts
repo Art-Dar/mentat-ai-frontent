@@ -1,4 +1,5 @@
 import * as auth from '../shared/auth-storage'
+import { initAsk, renderAnswer, resetAsk } from './ask'
 import { initLogin, resetLoginForm } from './login'
 import { initRouter, onScreenShown } from './router'
 import { initSaveButton } from './save'
@@ -17,6 +18,7 @@ function showLogin() {
   appView.hidden = true
   loginView.hidden = false
   resetLoginForm()
+  resetAsk() // don't leave one user's answer on screen for the next
 }
 
 function initialScreen() {
@@ -27,6 +29,7 @@ function initialScreen() {
 onScreenShown('settings', () => void refreshSettings())
 initRouter('ask')
 initSaveButton()
+initAsk()
 initLogin(showApp)
 initSettings(showLogin)
 
@@ -37,3 +40,4 @@ console.log('popup loaded')
 
 // Debug handle for manual testing from the popup DevTools console
 ;(globalThis as any).mentatAuth = auth
+;(globalThis as any).mentatAsk = { renderAnswer }

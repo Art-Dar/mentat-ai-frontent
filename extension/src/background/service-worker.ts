@@ -1,5 +1,12 @@
 import * as auth from '../shared/auth-storage'
-import type { ExtensionMessage, IngestPayload, SaveResponse } from '../shared/types'
+import { askQuestion } from '../shared/ask-api'
+import { AskError } from '../shared/ask-error'
+import type {
+  AskMessageResponse,
+  ExtensionMessage,
+  IngestPayload,
+  SaveResponse,
+} from '../shared/types'
 import * as retryQueue from '../shared/retry-queue'
 import { buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
 
@@ -15,8 +22,25 @@ function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
     })
 }
 
+function ask(question: string, sendResponse: (r: AskMessageResponse) => void) {
+  askQuestion(question)
+    .then((result) => sendResponse({ ok: true, result }))
+    .catch((e) => {
+      console.error('ask failed', e)
+      sendResponse({
+        ok: false,
+        error: e instanceof Error ? e.message : String(e),
+        retryable: e instanceof AskError && e.retryable,
+      })
+    })
+}
+
 chrome.runtime.onMessage.addListener(
-  (message: ExtensionMessage, sender, sendResponse: (r: SaveResponse) => void) => {
+  (
+    message: ExtensionMessage,
+    sender,
+    sendResponse: (r: SaveResponse | AskMessageResponse) => void,
+  ) => {
     if (message.type === 'SELECTION_CAPTURED') {
       console.log('selection captured', sender.tab?.id, message.selection)
       return
@@ -29,6 +53,11 @@ chrome.runtime.onMessage.addListener(
 
     if (message.type === 'SAVE_PAGE') {
       save(buildPagePayload(message.page), sendResponse)
+      return true
+    }
+
+    if (message.type === 'ASK') {
+      ask(message.question, sendResponse)
       return true
     }
   },

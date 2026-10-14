@@ -22,6 +22,7 @@ export type ExtensionMessage =
   | { type: 'SELECTION_CAPTURED'; selection: SerializedSelection }
   | { type: 'SAVE_SELECTION'; selection: SerializedSelection }
   | { type: 'SAVE_PAGE'; page: ExtractedPage }
+  | { type: 'ASK'; question: string }
 
 export type ExtractPageResponse =
   | { ok: true; page: ExtractedPage }
@@ -44,3 +45,20 @@ export type SaveResponse =
   | { ok: true; documentId: string }
   // queued: the request failed but was stored locally for a later retry
   | { ok: false; error: string; queued?: boolean }
+
+// Assumed contract for POST /api/v1/ask
+export interface AskSource {
+  document_id: string
+  title: string | null
+  url: string | null
+}
+
+export interface AskResponse {
+  answer: string
+  sources: AskSource[]
+}
+
+// Reply to an ASK message. Errors cross the message boundary as plain data.
+export type AskMessageResponse =
+  | { ok: true; result: AskResponse }
+  | { ok: false; error: string; retryable: boolean }
