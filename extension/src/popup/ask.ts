@@ -1,4 +1,5 @@
-import { AskError, askQuestion } from '../shared/ask-api'
+import { askQuestion } from '../shared/ask-client'
+import { AskError } from '../shared/ask-error'
 import type { AskResponse } from '../shared/types'
 import { renderMarkdown, renderSources } from './markdown'
 
