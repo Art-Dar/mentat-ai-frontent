@@ -1,19 +1,10 @@
+import { AskError } from './ask-error'
 import { getAuthToken } from './auth-storage'
 import { API_BASE_URL } from './config'
 import type { AskResponse, AskSource } from './types'
 
 // Answers can take a while (retrieval plus an LLM call), but not forever
 export const ASK_TIMEOUT_MS = 60_000
-
-export class AskError extends Error {
-  constructor(
-    message: string,
-    // Trying the same question again might work (outage, timeout), as opposed to needing a fix first
-    readonly retryable = false,
-  ) {
-    super(message)
-  }
-}
 
 function parseSources(value: unknown): AskSource[] {
   if (!Array.isArray(value)) return []
