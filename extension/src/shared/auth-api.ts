@@ -17,7 +17,9 @@ type StatusMessage = string | ((serverDetail?: string) => string)
 async function serverDetail(response: Response): Promise<string | undefined> {
   try {
     const data = await response.json()
-    return typeof data?.detail === 'string' ? data.detail : undefined
+    // The backend's error shape is {error: {code, message}}; plain FastAPI errors use `detail`
+    const text = data?.error?.message ?? data?.detail
+    return typeof text === 'string' ? text : undefined
   } catch {
     return undefined
   }

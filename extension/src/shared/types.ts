@@ -44,3 +44,15 @@ export type SaveResponse =
   | { ok: true; documentId: string }
   // queued: the request failed but was stored locally for a later retry
   | { ok: false; error: string; queued?: boolean }
+
+// Assumed contract for POST /api/v1/ask
+export interface AskSource {
+  document_id: string
+  title: string | null
+  url: string | null
+}
+
+export interface AskResponse {
+  answer: string
+  sources: AskSource[]
+}
