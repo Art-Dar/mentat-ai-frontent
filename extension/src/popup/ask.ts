@@ -1,19 +1,39 @@
-import { askQuestion } from '../shared/ask-api'
+import { AskError, askQuestion } from '../shared/ask-api'
 import type { AskResponse } from '../shared/types'
 import { renderMarkdown, renderSources } from './markdown'
 
 const form = document.getElementById('ask-form') as HTMLFormElement
 const input = document.getElementById('ask-input') as HTMLTextAreaElement
 const submit = document.getElementById('ask-submit') as HTMLButtonElement
-const status = document.getElementById('ask-status') as HTMLElement
+const hint = document.getElementById('ask-hint') as HTMLElement
+const loading = document.getElementById('ask-loading') as HTMLElement
+const errorBox = document.getElementById('ask-error') as HTMLElement
+const errorText = document.getElementById('ask-error-text') as HTMLElement
+const retryButton = document.getElementById('ask-retry') as HTMLButtonElement
 const answerBox = document.getElementById('answer') as HTMLElement
 
-function setStatus(text: string, kind: 'error' | '' = '') {
-  status.textContent = text
-  status.className = `message ${kind}`
+// The popup is in exactly one of these at a time: idle, loading, answered or failed
+function setLoading(on: boolean) {
+  loading.hidden = !on
+  input.disabled = on
+  submit.disabled = on
+  submit.textContent = on ? 'Asking…' : 'Ask'
+}
+
+function showError(message: string, retryable: boolean) {
+  errorText.textContent = message
+  retryButton.hidden = !retryable
+  errorBox.hidden = false
+}
+
+function clearFeedback() {
+  hint.textContent = ''
+  errorBox.hidden = true
+  answerBox.hidden = true
 }
 
 export function renderAnswer(result: AskResponse) {
+  clearFeedback()
   answerBox.replaceChildren(renderMarkdown(result.answer, result.sources))
   const sources = renderSources(result.sources)
   if (sources) answerBox.append(sources)
@@ -23,27 +43,29 @@ export function renderAnswer(result: AskResponse) {
 export function resetAsk() {
   input.value = ''
   answerBox.replaceChildren()
-  answerBox.hidden = true
-  setStatus('')
+  clearFeedback()
+  setLoading(false)
 }
 
 async function ask() {
   const question = input.value.trim()
   if (!question) {
-    setStatus('Type a question first', 'error')
+    clearFeedback()
+    hint.textContent = 'Type a question first'
     return
   }
 
-  submit.disabled = true
-  answerBox.hidden = true
-  setStatus('Thinking…')
+  clearFeedback()
+  setLoading(true)
   try {
     renderAnswer(await askQuestion(question))
-    setStatus('')
   } catch (err) {
-    setStatus(err instanceof Error ? err.message : 'Something went wrong', 'error')
+    const retryable = err instanceof AskError && err.retryable
+    showError(err instanceof Error ? err.message : 'Something went wrong', retryable)
   } finally {
-    submit.disabled = false
+    setLoading(false)
+    // Disabling the field dropped focus; put the cursor back so the user can keep typing
+    input.focus()
   }
 }
 
@@ -52,6 +74,7 @@ export function initAsk() {
     e.preventDefault()
     void ask()
   })
+  retryButton.addEventListener('click', () => void ask())
 
   // Enter sends, Shift+Enter adds a new line
   input.addEventListener('keydown', (e) => {

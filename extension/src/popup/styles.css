@@ -164,3 +164,50 @@ body {
 .sources { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 .sources-title { margin: 0 0 4px; color: var(--muted); font-size: 12px; }
 .sources ol { margin: 0; }
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.loading[hidden] { display: none; }
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 3s; }
+}
+
+.error-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 13px;
+}
+.error-box[hidden] { display: none; }
+.retry {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid #991b1b;
+  border-radius: 6px;
+  background: none;
+  color: #991b1b;
+  font: inherit;
+  cursor: pointer;
+}
+.ask-input:disabled { opacity: 0.6; }

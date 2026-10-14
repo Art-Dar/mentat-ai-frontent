@@ -2,7 +2,18 @@ import { getAuthToken } from './auth-storage'
 import { API_BASE_URL } from './config'
 import type { AskResponse, AskSource } from './types'
 
-export class AskError extends Error {}
+// Answers can take a while (retrieval plus an LLM call), but not forever
+export const ASK_TIMEOUT_MS = 60_000
+
+export class AskError extends Error {
+  constructor(
+    message: string,
+    // Trying the same question again might work (outage, timeout), as opposed to needing a fix first
+    readonly retryable = false,
+  ) {
+    super(message)
+  }
+}
 
 function parseSources(value: unknown): AskSource[] {
   if (!Array.isArray(value)) return []
@@ -24,17 +35,32 @@ export async function askQuestion(question: string): Promise<AskResponse> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       body: JSON.stringify({ question }),
+      signal: AbortSignal.timeout(ASK_TIMEOUT_MS),
     })
-  } catch {
-    throw new AskError('Could not reach the server')
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'TimeoutError') {
+      throw new AskError('The server took too long to answer', true)
+    }
+    throw new AskError('Could not reach the server', true)
   }
 
   if (response.status === 401) throw new AskError('Your session expired. Log in again.')
   if (response.status === 404) throw new AskError('The server does not support asking yet')
   if (response.status === 422) throw new AskError('Enter a valid question')
-  if (!response.ok) throw new AskError(`Could not get an answer (status ${response.status})`)
+  if (response.status === 429) {
+    throw new AskError('Too many questions at once. Wait a moment and retry.', true)
+  }
+  if (!response.ok) {
+    throw new AskError(`Could not get an answer (status ${response.status})`, response.status >= 500)
+  }
 
-  const data = await response.json()
-  if (typeof data?.answer !== 'string') throw new AskError('Unexpected response from the server')
-  return { answer: data.answer, sources: parseSources(data.sources) }
+  let data: unknown
+  try {
+    data = await response.json()
+  } catch {
+    throw new AskError('Unexpected response from the server', true)
+  }
+  const answer = (data as { answer?: unknown })?.answer
+  if (typeof answer !== 'string') throw new AskError('Unexpected response from the server', true)
+  return { answer, sources: parseSources((data as { sources?: unknown }).sources) }
 }
