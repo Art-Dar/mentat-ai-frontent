@@ -8,7 +8,7 @@ import type {
   SaveResponse,
 } from '../shared/types'
 import * as retryQueue from '../shared/retry-queue'
-import { buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
+import { buildNotePayload, buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
 
 function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
   sendToIngest(payload)
@@ -53,6 +53,11 @@ chrome.runtime.onMessage.addListener(
 
     if (message.type === 'SAVE_PAGE') {
       save(buildPagePayload(message.page), sendResponse)
+      return true
+    }
+
+    if (message.type === 'SAVE_NOTE') {
+      save(buildNotePayload(message.text, message.title), sendResponse)
       return true
     }
 
