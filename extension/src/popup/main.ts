@@ -1,9 +1,11 @@
 import * as auth from '../shared/auth-storage'
 import { initAsk, renderAnswer, resetAsk } from './ask'
+import { initDocumentTags, resetDocumentTags } from './doc-tags'
 import { initNote, resetNote } from './note'
 import { initLogin, resetLoginForm } from './login'
 import { initRouter, onScreenShown } from './router'
 import { initSaveButton } from './save'
+import { refreshTags, resetTags } from './tag-manager'
 import { initSettings, refreshSettings } from './settings'
 
 const loginView = document.getElementById('login-view') as HTMLElement
@@ -20,6 +22,8 @@ function showLogin() {
   loginView.hidden = false
   resetLoginForm()
   resetNote()
+  resetTags()
+  resetDocumentTags()
   resetAsk() // don't leave one user's answer on screen for the next
 }
 
@@ -29,10 +33,12 @@ function initialScreen() {
 }
 
 onScreenShown('settings', () => void refreshSettings())
+onScreenShown('tags', () => void refreshTags())
 initRouter('ask')
 initSaveButton()
 initAsk()
 initNote()
+initDocumentTags()
 initLogin(showApp)
 initSettings(showLogin)
 

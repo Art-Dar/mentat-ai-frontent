@@ -1,3 +1,4 @@
+import { showDocumentTags } from './doc-tags'
 import type { ExtensionMessage, SaveResponse } from '../shared/types'
 
 const form = document.getElementById('note-form') as HTMLFormElement
@@ -35,6 +36,7 @@ export function initNote() {
       if (saved?.ok) {
         resetNote()
         setMessage('Note saved ✓')
+        showDocumentTags(saved.documentId)
       } else if (saved?.queued) {
         resetNote()
         setMessage('Offline: queued, will retry later')
