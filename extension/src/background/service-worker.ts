@@ -8,7 +8,10 @@ import type {
   SaveResponse,
 } from '../shared/types'
 import * as retryQueue from '../shared/retry-queue'
+import { registerMediaMenus } from './save-media'
 import { buildNotePayload, buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
+
+registerMediaMenus()
 
 function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
   sendToIngest(payload)

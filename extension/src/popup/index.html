@@ -41,7 +41,7 @@
       <h1 class="title">Mentat</h1>
       <nav class="tabs" role="tablist" aria-label="Screens">
         <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
-        <button class="tab" role="tab" id="tab-note" data-screen="note" aria-controls="screen-note" type="button">Note</button>
+        <button class="tab" role="tab" id="tab-note" data-screen="note" aria-controls="screen-note" type="button">Add</button>
         <button class="tab" role="tab" id="tab-tags" data-screen="tags" aria-controls="screen-tags" type="button">Tags</button>
         <button class="tab" role="tab" id="tab-settings" data-screen="settings" aria-controls="screen-settings" type="button">Settings</button>
       </nav>
@@ -70,9 +70,29 @@
       <section class="screen" id="screen-note" role="tabpanel" aria-labelledby="tab-note" hidden>
         <form id="note-form" class="form" novalidate>
           <input id="note-title" type="text" placeholder="Title (optional)" aria-label="Note title" />
-          <textarea id="note-input" class="ask-input" rows="6" placeholder="Write a note to your second brain…" aria-label="Note"></textarea>
+          <textarea id="note-input" class="ask-input" rows="4" placeholder="Write a note to your second brain…" aria-label="Note"></textarea>
           <button class="primary" id="note-submit" type="submit">Save note</button>
           <p class="message" id="note-message" role="status" aria-live="polite"></p>
+        </form>
+
+        <form id="upload-form" class="form upload-form" novalidate>
+          <label for="upload-file">Or upload a PDF / image</label>
+          <input id="upload-file" type="file" />
+          <input id="upload-title" type="text" placeholder="Title (optional)" aria-label="File title" />
+          <div id="upload-language-field" hidden>
+            <label for="upload-language">Text language in the image</label>
+            <select id="upload-language">
+              <option value="eng">English</option>
+              <option value="ukr">Ukrainian</option>
+              <option value="rus">Russian</option>
+              <option value="deu">German</option>
+              <option value="fra">French</option>
+              <option value="spa">Spanish</option>
+              <option value="pol">Polish</option>
+            </select>
+          </div>
+          <button class="secondary-action" id="upload-submit" type="submit">Upload</button>
+          <p class="message" id="upload-message" role="status" aria-live="polite"></p>
         </form>
       </section>
 
