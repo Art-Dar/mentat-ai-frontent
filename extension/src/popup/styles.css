@@ -296,3 +296,25 @@ body {
 .health-dot.degraded { background: #d97706; }
 .health-dot.down { background: #dc2626; }
 .hint .link { margin: 0 0 0 4px; padding: 0; font-size: 12px; }
+
+.dropzone {
+  display: block;
+  margin-top: 0 !important;
+  padding: 16px 8px;
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 13px !important;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.dropzone.over, .dropzone:focus-within { border-color: var(--accent); color: var(--accent); }
+.form .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

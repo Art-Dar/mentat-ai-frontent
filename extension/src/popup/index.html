@@ -76,8 +76,10 @@
         </form>
 
         <form id="upload-form" class="form upload-form" novalidate>
-          <label for="upload-file">Or upload a PDF / image</label>
-          <input id="upload-file" type="file" />
+          <label class="dropzone" id="upload-drop" for="upload-file">
+            <span id="upload-drop-text">Or drop a PDF / image here, or click to choose</span>
+            <input id="upload-file" class="visually-hidden" type="file" />
+          </label>
           <input id="upload-title" type="text" placeholder="Title (optional)" aria-label="File title" />
           <div id="upload-language-field" hidden>
             <label for="upload-language">Text language in the image</label>
