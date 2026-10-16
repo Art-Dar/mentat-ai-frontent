@@ -282,3 +282,17 @@ body {
 }
 .upload-form input + input { margin-top: 4px; }
 .upload-form .secondary-action { margin-top: 12px; }
+
+.health-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 4px;
+  border-radius: 50%;
+  background: var(--muted);
+  vertical-align: middle;
+}
+.health-dot.ok { background: #16a34a; }
+.health-dot.degraded { background: #d97706; }
+.health-dot.down { background: #dc2626; }
+.hint .link { margin: 0 0 0 4px; padding: 0; font-size: 12px; }

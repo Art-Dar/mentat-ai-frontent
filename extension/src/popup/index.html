@@ -10,7 +10,7 @@
   <!-- Shown until the user is signed in -->
   <div id="login-view" hidden>
     <header class="header">
-      <h1 class="title">Mentat</h1>
+      <h1 class="title">Mentat <span class="health-dot checking" role="img" aria-label="Checking server…"></span></h1>
     </header>
     <main class="content">
       <form id="login-form" class="form" novalidate>
@@ -38,7 +38,7 @@
   <!-- Shown once signed in -->
   <div id="app-view" hidden>
     <header class="header">
-      <h1 class="title">Mentat</h1>
+      <h1 class="title">Mentat <span class="health-dot checking" role="img" aria-label="Checking server…"></span></h1>
       <nav class="tabs" role="tablist" aria-label="Screens">
         <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
         <button class="tab" role="tab" id="tab-note" data-screen="note" aria-controls="screen-note" type="button">Add</button>
@@ -115,6 +115,7 @@
         <button class="google" id="google-connect" type="button" hidden>Connect Google account</button>
         <button class="secondary" id="logout" type="button">Log out</button>
         <p class="message" id="settings-message" role="status" aria-live="polite"></p>
+        <p class="hint">Server: <span id="health-detail">–</span> <button class="link" id="health-refresh" type="button">Check</button></p>
         <p class="hint">Queued saves: <span id="queue-count">–</span></p>
       </section>
     </main>

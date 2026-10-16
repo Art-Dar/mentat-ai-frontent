@@ -2,6 +2,7 @@ import * as auth from '../shared/auth-storage'
 import { initAsk, renderAnswer, resetAsk } from './ask'
 import { initDocumentTags, resetDocumentTags } from './doc-tags'
 import { initNote, resetNote } from './note'
+import { refreshHealth } from './health'
 import { initLogin, resetLoginForm } from './login'
 import { initRouter, onScreenShown } from './router'
 import { initSaveButton } from './save'
@@ -34,7 +35,12 @@ function initialScreen() {
   document.getElementById('tab-ask')?.click()
 }
 
-onScreenShown('settings', () => void refreshSettings())
+onScreenShown('settings', () => {
+  void refreshSettings()
+  void refreshHealth()
+})
+document.getElementById('health-refresh')?.addEventListener('click', () => void refreshHealth())
+void refreshHealth()
 onScreenShown('tags', () => void refreshTags())
 initRouter('ask')
 initSaveButton()
