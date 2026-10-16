@@ -1,5 +1,6 @@
 import * as auth from '../shared/auth-storage'
 import { initAsk, renderAnswer, resetAsk } from './ask'
+import { initNote, resetNote } from './note'
 import { initLogin, resetLoginForm } from './login'
 import { initRouter, onScreenShown } from './router'
 import { initSaveButton } from './save'
@@ -18,6 +19,7 @@ function showLogin() {
   appView.hidden = true
   loginView.hidden = false
   resetLoginForm()
+  resetNote()
   resetAsk() // don't leave one user's answer on screen for the next
 }
 
@@ -30,6 +32,7 @@ onScreenShown('settings', () => void refreshSettings())
 initRouter('ask')
 initSaveButton()
 initAsk()
+initNote()
 initLogin(showApp)
 initSettings(showLogin)
 

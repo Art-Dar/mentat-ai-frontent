@@ -23,6 +23,7 @@ export type ExtensionMessage =
   | { type: 'SAVE_SELECTION'; selection: SerializedSelection }
   | { type: 'SAVE_PAGE'; page: ExtractedPage }
   | { type: 'ASK'; question: string }
+  | { type: 'SAVE_NOTE'; text: string; title?: string }
 
 export type ExtractPageResponse =
   | { ok: true; page: ExtractedPage }

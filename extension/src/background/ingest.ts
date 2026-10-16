@@ -38,6 +38,10 @@ export function buildSelectionPayload(selection: SerializedSelection): IngestPay
   }
 }
 
+export function buildNotePayload(text: string, title?: string): IngestPayload {
+  return { source: 'note', text, title: title || undefined }
+}
+
 export function buildPagePayload(page: ExtractedPage): IngestPayload {
   return {
     source: 'article',

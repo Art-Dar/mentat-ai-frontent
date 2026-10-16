@@ -41,6 +41,7 @@
       <h1 class="title">Mentat</h1>
       <nav class="tabs" role="tablist" aria-label="Screens">
         <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
+        <button class="tab" role="tab" id="tab-note" data-screen="note" aria-controls="screen-note" type="button">Note</button>
         <button class="tab" role="tab" id="tab-settings" data-screen="settings" aria-controls="screen-settings" type="button">Settings</button>
       </nav>
     </header>
@@ -63,6 +64,15 @@
           <button class="retry" id="ask-retry" type="button">Retry</button>
         </div>
         <div class="answer" id="answer" aria-live="polite" hidden></div>
+      </section>
+
+      <section class="screen" id="screen-note" role="tabpanel" aria-labelledby="tab-note" hidden>
+        <form id="note-form" class="form" novalidate>
+          <input id="note-title" type="text" placeholder="Title (optional)" aria-label="Note title" />
+          <textarea id="note-input" class="ask-input" rows="6" placeholder="Write a note to your second brain…" aria-label="Note"></textarea>
+          <button class="primary" id="note-submit" type="submit">Save note</button>
+          <p class="message" id="note-message" role="status" aria-live="polite"></p>
+        </form>
       </section>
 
       <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
