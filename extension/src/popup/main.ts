@@ -5,6 +5,7 @@ import { initNote, resetNote } from './note'
 import { initLogin, resetLoginForm } from './login'
 import { initRouter, onScreenShown } from './router'
 import { initSaveButton } from './save'
+import { initUpload, resetUpload } from './upload'
 import { refreshTags, resetTags } from './tag-manager'
 import { initSettings, refreshSettings } from './settings'
 
@@ -23,6 +24,7 @@ function showLogin() {
   resetLoginForm()
   resetNote()
   resetTags()
+  resetUpload()
   resetDocumentTags()
   resetAsk() // don't leave one user's answer on screen for the next
 }
@@ -38,6 +40,7 @@ initRouter('ask')
 initSaveButton()
 initAsk()
 initNote()
+initUpload()
 initDocumentTags()
 initLogin(showApp)
 initSettings(showLogin)

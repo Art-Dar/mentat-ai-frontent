@@ -270,3 +270,15 @@ body {
 .source-file { margin: 0; padding: 0; font-size: 12px; }
 .source-file-note { margin-left: 4px; color: var(--muted); font-size: 12px; }
 .source-file-note.error { color: #991b1b; }
+
+.upload-form { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+.upload-form input[type="file"] { padding: 4px; font-size: 12px; }
+.upload-form select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+.upload-form input + input { margin-top: 4px; }
+.upload-form .secondary-action { margin-top: 12px; }
