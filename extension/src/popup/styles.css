@@ -254,3 +254,15 @@ body {
   border-radius: 6px;
   font: inherit;
 }
+
+.tag-confirm { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 13px; }
+.tag-confirm span { flex-basis: 100%; }
+.tag-confirm .link { margin: 0; }
+.tag-rename select {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
