@@ -1,3 +1,4 @@
+import { FileLinkError, getOriginalFileUrl } from '../shared/files-api'
 import type { AskSource } from '../shared/types'
 
 // Renders a small Markdown subset into DOM nodes. It never uses innerHTML, so text from the
@@ -135,6 +136,34 @@ export function renderMarkdown(markdown: string, sources: AskSource[] = []): Doc
   return out
 }
 
+// Fetches a fresh presigned link on click (they expire) and opens it in a new tab
+function originalFileButton(documentId: string): HTMLElement {
+  const holder = document.createElement('span')
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.className = 'link source-file'
+  btn.textContent = 'Original file'
+  const note = document.createElement('span')
+  note.className = 'source-file-note'
+  holder.append(btn, note)
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true
+    note.textContent = ''
+    try {
+      await chrome.tabs.create({ url: await getOriginalFileUrl(documentId) })
+    } catch (e) {
+      const missing = e instanceof FileLinkError && e.missing
+      if (missing) btn.hidden = true
+      note.textContent = e instanceof Error ? e.message : 'Something went wrong'
+      note.className = `source-file-note${missing ? '' : ' error'}`
+    } finally {
+      btn.disabled = false
+    }
+  })
+  return holder
+}
+
 export function renderSources(sources: AskSource[]): HTMLElement | null {
   if (!sources.length) return null
 
@@ -150,6 +179,7 @@ export function renderSources(sources: AskSource[]): HTMLElement | null {
     const label = source.title || source.url || 'Untitled'
     if (isHttpUrl(source.url)) li.append(link(label, source.url))
     else li.textContent = label
+    if (source.document_id) li.append(' ', originalFileButton(source.document_id))
     ol.append(li)
   }
   wrapper.append(heading, ol)
