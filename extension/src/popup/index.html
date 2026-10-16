@@ -14,7 +14,7 @@
     </header>
     <main class="content">
       <form id="login-form" class="form" novalidate>
-        <p class="hint" id="login-hint">Log in to start saving to your brain.</p>
+        <p class="hint" id="login-hint">Sign in to continue.</p>
 
         <label for="email">Email</label>
         <input id="email" type="email" autocomplete="username" spellcheck="false" />
@@ -28,8 +28,8 @@
         </div>
 
         <button class="primary" id="login-submit" type="submit">Log in</button>
-        <button class="google" id="google-login" type="button" hidden>Continue with Google</button>
-        <button class="link" id="toggle-mode" type="button">Create an account</button>
+        <button class="google" id="google-login" type="button" hidden>Google</button>
+        <button class="link" id="toggle-mode" type="button">Create account</button>
         <p class="message" id="login-message" role="status" aria-live="polite"></p>
       </form>
     </main>
@@ -50,14 +50,14 @@
     <main class="content">
       <section class="screen" id="screen-ask" role="tabpanel" aria-labelledby="tab-ask" hidden>
         <form id="ask-form" class="form" novalidate>
-          <textarea id="ask-input" class="ask-input" rows="3" placeholder="Ask your second brain…" aria-label="Question"></textarea>
+          <textarea id="ask-input" class="ask-input" rows="3" placeholder="Ask…" aria-label="Question"></textarea>
           <button class="primary" id="ask-submit" type="submit">Ask</button>
           <p class="message error" id="ask-hint" role="status" aria-live="polite"></p>
         </form>
 
         <div class="loading" id="ask-loading" role="status" hidden>
           <span class="spinner" aria-hidden="true"></span>
-          <span>Thinking…</span>
+          <span>Thinking</span>
         </div>
 
         <div class="error-box" id="ask-error" role="alert" hidden>
@@ -70,19 +70,31 @@
       <section class="screen" id="screen-note" role="tabpanel" aria-labelledby="tab-note" hidden>
         <form id="note-form" class="form" novalidate>
           <input id="note-title" type="text" placeholder="Title (optional)" aria-label="Note title" />
-          <textarea id="note-input" class="ask-input" rows="4" placeholder="Write a note to your second brain…" aria-label="Note"></textarea>
-          <button class="primary" id="note-submit" type="submit">Save note</button>
+          <textarea id="note-input" class="ask-input" rows="4" placeholder="Write a note…" aria-label="Note"></textarea>
+          <button class="primary" id="note-submit" type="submit">Save</button>
           <p class="message" id="note-message" role="status" aria-live="polite"></p>
         </form>
 
         <form id="upload-form" class="form upload-form" novalidate>
           <label class="dropzone" id="upload-drop" for="upload-file">
-            <span id="upload-drop-text">Or drop a PDF / image here, or click to choose</span>
+            <svg class="drop-icon" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+              <path d="M14 3v5h5" />
+              <path d="M9 13h6M9 17h6" />
+            </svg>
+            <span id="upload-drop-text">Drop a PDF or image, or click to choose</span>
             <input id="upload-file" class="visually-hidden" type="file" />
           </label>
-          <input id="upload-title" type="text" placeholder="Title (optional)" aria-label="File title" />
+          <div class="upload-row">
+            <input id="upload-title" type="text" placeholder="Title" aria-label="File title (optional)" />
+            <button class="icon-button" id="upload-submit" type="submit" title="Upload" aria-label="Upload">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+            </button>
+          </div>
           <div id="upload-language-field" hidden>
-            <label for="upload-language">Text language in the image</label>
+            <label for="upload-language">Language</label>
             <select id="upload-language">
               <option value="eng">English</option>
               <option value="ukr">Ukrainian</option>
@@ -93,43 +105,48 @@
               <option value="pol">Polish</option>
             </select>
           </div>
-          <button class="secondary-action" id="upload-submit" type="submit">Upload</button>
           <p class="message" id="upload-message" role="status" aria-live="polite"></p>
         </form>
       </section>
 
       <section class="screen" id="screen-tags" role="tabpanel" aria-labelledby="tab-tags" hidden>
-        <p class="hint">Your tags, most used first. Renaming to an existing name merges the two.</p>
+        <p class="hint">Rename to merge.</p>
         <ul class="tag-list" id="tag-list"></ul>
         <p class="message" id="tags-message" role="status" aria-live="polite"></p>
       </section>
 
       <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
-        <p class="hint" id="auth-status">Signed in.</p>
+        <p class="hint" id="auth-status">Signed in</p>
 
-        <form id="set-password-form" class="form" novalidate>
-          <label for="new-password">Add password sign-in</label>
-          <input id="new-password" type="password" autocomplete="new-password" placeholder="New password" />
-          <input id="new-password-confirm" type="password" autocomplete="new-password" placeholder="Repeat password" />
-          <button class="secondary-action" id="set-password-submit" type="submit">Set password</button>
-        </form>
+        <button class="secondary-action" id="password-open" type="button"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L20 3M16 7l3 3M14 9l2 2"/></svg>Set password</button>
 
-        <button class="google" id="google-connect" type="button" hidden>Connect Google account</button>
-        <button class="secondary" id="logout" type="button">Log out</button>
+        <dialog id="password-dialog" class="dialog" aria-labelledby="password-title">
+          <form id="set-password-form" class="form" novalidate>
+            <h2 class="dialog-title" id="password-title">Set password</h2>
+            <input id="new-password" type="password" autocomplete="new-password" placeholder="New password" aria-label="New password" />
+            <input id="new-password-confirm" type="password" autocomplete="new-password" placeholder="Repeat password" aria-label="Repeat password" />
+            <p class="message" id="password-message" role="status" aria-live="polite"></p>
+            <div class="dialog-actions">
+              <button class="link" id="password-cancel" type="button">Cancel</button>
+              <button class="primary" id="set-password-submit" type="submit">Save</button>
+            </div>
+          </form>
+        </dialog>
+
+        <button class="secondary-action" id="google-connect" type="button" hidden><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M12 12h9"/></svg>Connect Google</button>
+        <button class="secondary" id="logout" type="button"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
         <p class="message" id="settings-message" role="status" aria-live="polite"></p>
         <p class="hint">Server: <span id="health-detail">–</span> <button class="link" id="health-refresh" type="button">Check</button></p>
-        <p class="hint">Queued saves: <span id="queue-count">–</span></p>
+        <p class="hint">Queued: <span id="queue-count">–</span></p>
       </section>
     </main>
 
     <footer class="footer">
-      <button id="save" class="primary" type="button">Save this page</button>
-      <div id="toast" role="status" aria-live="polite"></div>
       <div id="doc-tags" class="doc-tags" hidden>
-        <p class="sources-title">Tags for the saved item</p>
+        <p class="sources-title">Tags</p>
         <div id="doc-tags-list" class="chips"></div>
         <form id="doc-tags-form" class="doc-tags-form">
-          <input id="doc-tags-input" type="text" placeholder="Add tags, comma separated" aria-label="Add tags" />
+          <input id="doc-tags-input" type="text" placeholder="Add tags" aria-label="Add tags" />
         </form>
         <p class="message" id="doc-tags-status" role="status" aria-live="polite"></p>
       </div>

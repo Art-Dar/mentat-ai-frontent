@@ -78,7 +78,7 @@ export function initUpload() {
     if (!file) return setMessage('Choose a PDF or an image first.', 'error')
 
     submit.disabled = true
-    submit.textContent = 'Uploading…'
+    submit.title = 'Uploading…'
     setMessage('')
     try {
       const result = await uploadFile(file, titleInput.value.trim() || undefined, languageSelect.value)
@@ -89,7 +89,7 @@ export function initUpload() {
       setMessage(err instanceof UploadError ? err.message : 'Could not upload the file', 'error')
     } finally {
       submit.disabled = false
-      submit.textContent = 'Upload'
+      submit.title = 'Upload'
     }
   })
 }

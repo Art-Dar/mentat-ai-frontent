@@ -18,6 +18,22 @@ function button(label: string, type: 'button' | 'submit' = 'button') {
   return el
 }
 
+// Static markup only, so innerHTML is safe here
+const ICONS = {
+  rename: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  merge: '<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/>',
+}
+
+function iconButton(icon: keyof typeof ICONS, label: string) {
+  const el = document.createElement('button')
+  el.type = 'button'
+  el.className = 'row-icon'
+  el.title = label
+  el.setAttribute('aria-label', label)
+  el.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[icon]}</svg>`
+  return el
+}
+
 function plural(n: number, word: string) {
   return `${n} ${word}${n === 1 ? '' : 's'}`
 }
@@ -123,8 +139,8 @@ function renderRow(tag: Tag): HTMLElement {
   const count = document.createElement('span')
   count.className = 'tag-count'
   count.textContent = String(tag.count)
-  const rename = button('Rename')
-  const merge = button('Merge')
+  const rename = iconButton('rename', 'Rename')
+  const merge = iconButton('merge', 'Merge into another tag')
   row.append(name, count, rename, merge)
 
   rename.addEventListener('click', () => startRename(row, tag))

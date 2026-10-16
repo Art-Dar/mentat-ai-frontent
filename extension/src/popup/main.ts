@@ -5,7 +5,6 @@ import { initNote, resetNote } from './note'
 import { refreshHealth } from './health'
 import { initLogin, resetLoginForm } from './login'
 import { initRouter, onScreenShown } from './router'
-import { initSaveButton } from './save'
 import { initUpload, resetUpload } from './upload'
 import { refreshTags, resetTags } from './tag-manager'
 import { initSettings, refreshSettings } from './settings'
@@ -43,7 +42,6 @@ document.getElementById('health-refresh')?.addEventListener('click', () => void 
 void refreshHealth()
 onScreenShown('tags', () => void refreshTags())
 initRouter('ask')
-initSaveButton()
 initAsk()
 initNote()
 initUpload()
