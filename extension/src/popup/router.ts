@@ -1,4 +1,4 @@
-export type Screen = 'ask' | 'note' | 'settings'
+export type Screen = 'ask' | 'note' | 'tags' | 'settings'
 
 const tabs = document.querySelectorAll<HTMLButtonElement>('.tab')
 const screens = document.querySelectorAll<HTMLElement>('.screen')

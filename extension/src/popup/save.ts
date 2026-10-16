@@ -1,3 +1,4 @@
+import { showDocumentTags } from './doc-tags'
 import type { ExtensionMessage, ExtractPageResponse, SaveResponse } from '../shared/types'
 
 const saveButton = document.getElementById('save') as HTMLButtonElement
@@ -27,7 +28,10 @@ async function savePage(): Promise<boolean> {
     type: 'SAVE_PAGE',
     page: extracted.page,
   } satisfies ExtensionMessage)
-  if (saved?.ok) return true
+  if (saved?.ok) {
+    showDocumentTags(saved.documentId)
+    return true
+  }
   if (saved?.queued) return false
   throw new Error(saved?.error ?? 'Save failed')
 }

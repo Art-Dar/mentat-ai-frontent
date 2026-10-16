@@ -211,3 +211,46 @@ body {
   cursor: pointer;
 }
 .ask-input:disabled { opacity: 0.6; }
+
+.tag-list { margin: 8px 0 0; padding: 0; max-height: 240px; overflow-y: auto; list-style: none; }
+.tag-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tag-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tag-count { color: var(--muted); font-size: 12px; }
+.tag-row .link, .tag-rename .link { margin: 0; }
+.tag-rename { display: flex; flex: 1; align-items: center; gap: 4px; }
+.tag-rename input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.doc-tags { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 12px;
+}
+.chip.auto { border-color: var(--border); color: #374151; background: #f9fafb; }
+.chip-remove { padding: 0 4px; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.doc-tags-form input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}

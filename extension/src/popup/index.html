@@ -42,6 +42,7 @@
       <nav class="tabs" role="tablist" aria-label="Screens">
         <button class="tab" role="tab" id="tab-ask" data-screen="ask" aria-controls="screen-ask" type="button">Ask</button>
         <button class="tab" role="tab" id="tab-note" data-screen="note" aria-controls="screen-note" type="button">Note</button>
+        <button class="tab" role="tab" id="tab-tags" data-screen="tags" aria-controls="screen-tags" type="button">Tags</button>
         <button class="tab" role="tab" id="tab-settings" data-screen="settings" aria-controls="screen-settings" type="button">Settings</button>
       </nav>
     </header>
@@ -75,6 +76,12 @@
         </form>
       </section>
 
+      <section class="screen" id="screen-tags" role="tabpanel" aria-labelledby="tab-tags" hidden>
+        <p class="hint">Your tags, most used first. Renaming to an existing name merges the two.</p>
+        <ul class="tag-list" id="tag-list"></ul>
+        <p class="message" id="tags-message" role="status" aria-live="polite"></p>
+      </section>
+
       <section class="screen" id="screen-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
         <p class="hint" id="auth-status">Signed in.</p>
 
@@ -95,6 +102,14 @@
     <footer class="footer">
       <button id="save" class="primary" type="button">Save this page</button>
       <div id="toast" role="status" aria-live="polite"></div>
+      <div id="doc-tags" class="doc-tags" hidden>
+        <p class="sources-title">Tags for the saved item</p>
+        <div id="doc-tags-list" class="chips"></div>
+        <form id="doc-tags-form" class="doc-tags-form">
+          <input id="doc-tags-input" type="text" placeholder="Add tags, comma separated" aria-label="Add tags" />
+        </form>
+        <p class="message" id="doc-tags-status" role="status" aria-live="polite"></p>
+      </div>
     </footer>
   </div>
 
