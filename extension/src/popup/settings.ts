@@ -45,6 +45,8 @@ export async function refreshSettings() {
 export function initSettings(onLoggedOut: () => void) {
   logoutButton.addEventListener('click', async () => {
     await clearAuthToken()
+    // Drop Chrome's cached Google token too, so the next Google sign-in starts clean
+    await chrome.identity.clearAllCachedAuthTokens().catch(() => {})
     onLoggedOut()
   })
 
