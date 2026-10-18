@@ -1,5 +1,5 @@
 import * as auth from '../shared/auth-storage'
-import { initAsk, renderAnswer, resetAsk } from './ask'
+import { initAsk, refreshChatList, renderAnswer, resetAsk } from './ask'
 import { initDocumentTags, resetDocumentTags } from './doc-tags'
 import { initNote, resetNote } from './note'
 import { refreshHealth } from './health'
@@ -41,6 +41,7 @@ onScreenShown('settings', () => {
 document.getElementById('health-refresh')?.addEventListener('click', () => void refreshHealth())
 void refreshHealth()
 onScreenShown('tags', () => void refreshTags())
+onScreenShown('ask', () => void refreshChatList())
 initRouter('ask')
 initAsk()
 initNote()

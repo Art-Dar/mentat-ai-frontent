@@ -25,8 +25,12 @@ function save(payload: IngestPayload, sendResponse: (r: SaveResponse) => void) {
     })
 }
 
-function ask(question: string, sendResponse: (r: AskMessageResponse) => void) {
-  askQuestion(question)
+function ask(
+  question: string,
+  conversationId: string | null,
+  sendResponse: (r: AskMessageResponse) => void,
+) {
+  askQuestion(question, conversationId)
     .then((result) => sendResponse({ ok: true, result }))
     .catch((e) => {
       console.error('ask failed', e)
@@ -60,7 +64,7 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (message.type === 'ASK') {
-      ask(message.question, sendResponse)
+      ask(message.question, message.conversationId ?? null, sendResponse)
       return true
     }
   },
