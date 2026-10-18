@@ -35,16 +35,16 @@ export function initNote() {
       } satisfies ExtensionMessage)
       if (saved?.ok) {
         resetNote()
-        setMessage('Note saved ✓')
+        setMessage('Saved ✓')
         showDocumentTags(saved.documentId)
       } else if (saved?.queued) {
         resetNote()
-        setMessage('Offline: queued, will retry later')
+        setMessage('Offline: queued')
       } else {
-        setMessage(saved?.error ?? "Couldn't save the note", 'error')
+        setMessage(saved?.error ?? 'Not saved', 'error')
       }
     } catch {
-      setMessage("Couldn't save the note", 'error')
+      setMessage('Not saved', 'error')
     } finally {
       submit.disabled = false
     }

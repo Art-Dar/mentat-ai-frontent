@@ -21,7 +21,6 @@ export type ExtensionMessage =
   | { type: 'EXTRACT_PAGE' }
   | { type: 'SELECTION_CAPTURED'; selection: SerializedSelection }
   | { type: 'SAVE_SELECTION'; selection: SerializedSelection }
-  | { type: 'SAVE_PAGE'; page: ExtractedPage }
   | { type: 'ASK'; question: string }
   | { type: 'SAVE_NOTE'; text: string; title?: string }
 

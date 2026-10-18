@@ -2,6 +2,7 @@ const HOST_ID = 'mentat-save-button-host'
 
 let host: HTMLElement | null = null
 let button: HTMLButtonElement | null = null
+let label: HTMLSpanElement | null = null
 let clickHandler: (() => void) | null = null
 
 function ensureButton(): HTMLButtonElement {
@@ -20,21 +21,32 @@ function ensureButton(): HTMLButtonElement {
       z-index: 2147483647;
       padding: 6px 10px;
       border-radius: 6px;
-      background: #4f46e5;
-      color: #fff;
-      font: 600 13px/1 system-ui, sans-serif;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      background: #dba67c;
+      color: #4a3a2c;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      gap: 6px;
+      font: 500 13px/1 system-ui, sans-serif;
+      box-shadow: 0 2px 8px rgba(90, 70, 50, 0.22);
       cursor: pointer;
     }
-    button:hover { background: #4338ca; }
-    button[disabled] { background: #16a34a; cursor: default; }
-    button.failed[disabled] { background: #dc2626; }
-    button.queued[disabled] { background: #d97706; }
+    img { width: 16px; height: 16px; display: block; }
+    button:hover { background: #cf9569; }
+    button[disabled] { background: #9cc49b; cursor: default; }
+    button.failed[disabled] { background: #d98a7e; }
+    button.queued[disabled] { background: #e0c07a; }
   `
 
   button = document.createElement('button')
   button.type = 'button'
-  button.textContent = 'Save to brain'
+  // The Mentat brain icon, loaded from the extension (listed in web_accessible_resources)
+  const icon = document.createElement('img')
+  icon.src = chrome.runtime.getURL('public/icons/icon32.png')
+  icon.alt = ''
+  label = document.createElement('span')
+  label.textContent = 'Save'
+  button.append(icon, label)
   // Keep the page selection alive: mousedown on a button would otherwise clear it
   button.addEventListener('mousedown', (e) => e.preventDefault())
   button.addEventListener('click', () => clickHandler?.())
@@ -48,7 +60,7 @@ export function showSaveButton(rect: DOMRect, onClick: () => void) {
   const btn = ensureButton()
   clickHandler = onClick
   resetButton(btn)
-  btn.style.display = 'block'
+  btn.style.display = 'flex'
 
   // Place below the selection, clamped to the viewport
   const top = Math.min(rect.bottom + 8, window.innerHeight - 40)
@@ -57,26 +69,30 @@ export function showSaveButton(rect: DOMRect, onClick: () => void) {
   btn.style.left = `${left}px`
 }
 
+function setLabel(text: string) {
+  if (label) label.textContent = text
+}
+
 function resetButton(btn: HTMLButtonElement) {
   btn.disabled = false
   btn.classList.remove('failed', 'queued')
-  btn.textContent = 'Save to brain'
+  setLabel('Save')
 }
 
 export function markSaved() {
   if (!button) return
   button.disabled = true
-  button.textContent = 'Saved ✓'
+  setLabel('Saved ✓')
   setTimeout(hideSaveButton, 1200)
 }
 
-// Shows the error briefly, then goes back to "Save to brain" so the user can retry
+// Shows the error briefly, then goes back to "Save" so the user can retry
 export function markFailed() {
   if (!button) return
   const btn = button
   btn.disabled = true
   btn.classList.add('failed')
-  btn.textContent = 'Not saved ✕'
+  setLabel('Not saved')
   setTimeout(() => resetButton(btn), 2000)
 }
 
@@ -86,7 +102,7 @@ export function markQueued() {
   const btn = button
   btn.disabled = true
   btn.classList.add('queued')
-  btn.textContent = 'Queued, will retry'
+  setLabel('Queued')
   setTimeout(() => resetButton(btn), 2000)
 }
 

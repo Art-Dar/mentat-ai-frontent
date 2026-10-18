@@ -9,7 +9,7 @@ import type {
 } from '../shared/types'
 import * as retryQueue from '../shared/retry-queue'
 import { registerMediaMenus } from './save-media'
-import { buildNotePayload, buildPagePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
+import { buildNotePayload, buildSelectionPayload, IngestError, sendToIngest } from './ingest'
 
 registerMediaMenus()
 
@@ -52,11 +52,6 @@ chrome.runtime.onMessage.addListener(
     if (message.type === 'SAVE_SELECTION') {
       save(buildSelectionPayload(message.selection), sendResponse)
       return true // keep the channel open for the async response
-    }
-
-    if (message.type === 'SAVE_PAGE') {
-      save(buildPagePayload(message.page), sendResponse)
-      return true
     }
 
     if (message.type === 'SAVE_NOTE') {

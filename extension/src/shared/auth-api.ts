@@ -3,12 +3,12 @@ import { API_BASE_URL } from './config'
 
 export const MIN_PASSWORD_LENGTH = 8
 
-async function storeTokenFrom(response: Response): Promise<void> {
+async function storeTokenFrom(response: Response, email?: string): Promise<void> {
   const data = await response.json()
   if (typeof data?.access_token !== 'string' || !data.access_token) {
     throw new Error('Unexpected response from the server')
   }
-  await saveAuthToken(data.access_token)
+  await saveAuthToken(data.access_token, email)
 }
 
 // A message, or a function that gets the server's own `detail` text (if any) and returns one
@@ -50,7 +50,7 @@ async function authenticate(
     if (typeof message === 'function') throw new Error(message(await serverDetail(response)))
     throw new Error(message ?? `${fallback} (status ${response.status})`)
   }
-  await storeTokenFrom(response)
+  await storeTokenFrom(response, email)
 }
 
 export function login(email: string, password: string): Promise<void> {
@@ -117,7 +117,7 @@ async function googleAccessToken(): Promise<string> {
 async function postGoogleToken(
   path: string,
   headers: Record<string, string> = {},
-): Promise<Response> {
+): Promise<{ response: Response; token: string }> {
   for (let attempt = 0; attempt < 2; attempt++) {
     const token = await googleAccessToken()
 
@@ -132,15 +132,28 @@ async function postGoogleToken(
       throw new Error('Could not reach the server')
     }
 
-    if (response.status !== 401) return response
+    if (response.status !== 401) return { response, token }
     await chrome.identity.removeCachedAuthToken({ token })
   }
   throw new Error('Google sign-in was rejected. Try again.')
 }
 
+// The backend's login response has no email, so ask Google. Display only: failures are ignored.
+async function googleEmail(accessToken: string): Promise<string | undefined> {
+  try {
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+    const email = (await response.json())?.email
+    return typeof email === 'string' ? email : undefined
+  } catch {
+    return undefined
+  }
+}
+
 // Signs in (or creates the account) with the user's Google account
 export async function loginWithGoogle(): Promise<void> {
-  const response = await postGoogleToken('google')
+  const { response, token } = await postGoogleToken('google')
 
   if (response.status === 409) {
     throw new Error(
@@ -148,7 +161,7 @@ export async function loginWithGoogle(): Promise<void> {
     )
   }
   if (!response.ok) throw new Error(`Google sign-in failed (status ${response.status})`)
-  await storeTokenFrom(response)
+  await storeTokenFrom(response, await googleEmail(token))
 }
 
 // Links the user's Google account to the account they are already logged in with
@@ -156,7 +169,9 @@ export async function connectGoogle(): Promise<void> {
   const token = await getAuthToken()
   if (!token) throw new Error('Log in first')
 
-  const response = await postGoogleToken('google/connect', { Authorization: `Bearer ${token}` })
+  const { response } = await postGoogleToken('google/connect', {
+    Authorization: `Bearer ${token}`,
+  })
 
   if (response.status === 409) throw new Error('This Google account is already connected')
   if (!response.ok) throw new Error(`Connecting Google failed (status ${response.status})`)

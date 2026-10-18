@@ -26,19 +26,50 @@ function describe(result: UploadResult): string {
     : `Image saved ✓ (${result.wordCount} words)`
 }
 
+const dropZone = document.getElementById('upload-drop') as HTMLElement
+const dropText = document.getElementById('upload-drop-text') as HTMLElement
+const DROP_HINT = dropText.textContent ?? ''
+
+function isSupported(file: File) {
+  return isPdf(file) || /^image\/(png|jpeg|webp|tiff)$/.test(file.type)
+}
+
 export function resetUpload() {
   form.reset()
   languageField.hidden = true
+  dropText.textContent = DROP_HINT
+  dropZone.classList.remove('over')
   setMessage('')
 }
 
 export function initUpload() {
   fileInput.accept = ACCEPT
 
-  // OCR language only matters for images
+  // Show the chosen file; OCR language only matters for images
   fileInput.addEventListener('change', () => {
     const file = fileInput.files?.[0]
     languageField.hidden = !file || isPdf(file)
+    dropText.textContent = file ? file.name : DROP_HINT
+  })
+
+  // Without this the browser would navigate to a file dropped outside the zone
+  for (const type of ['dragover', 'drop'] as const) {
+    document.addEventListener(type, (e) => e.preventDefault())
+  }
+  dropZone.addEventListener('dragover', () => dropZone.classList.add('over'))
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'))
+  dropZone.addEventListener('drop', (e) => {
+    dropZone.classList.remove('over')
+    const file = e.dataTransfer?.files[0]
+    if (!file) return
+    if (!isSupported(file)) {
+      return setMessage('Unsupported file. Use a PDF, PNG, JPEG, WEBP or TIFF.', 'error')
+    }
+    const transfer = new DataTransfer()
+    transfer.items.add(file)
+    fileInput.files = transfer.files
+    fileInput.dispatchEvent(new Event('change'))
+    setMessage('')
   })
 
   form.addEventListener('submit', async (e) => {
@@ -47,7 +78,7 @@ export function initUpload() {
     if (!file) return setMessage('Choose a PDF or an image first.', 'error')
 
     submit.disabled = true
-    submit.textContent = 'Uploading…'
+    submit.title = 'Uploading…'
     setMessage('')
     try {
       const result = await uploadFile(file, titleInput.value.trim() || undefined, languageSelect.value)
@@ -58,7 +89,7 @@ export function initUpload() {
       setMessage(err instanceof UploadError ? err.message : 'Could not upload the file', 'error')
     } finally {
       submit.disabled = false
-      submit.textContent = 'Upload'
+      submit.title = 'Upload'
     }
   })
 }

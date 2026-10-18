@@ -26,6 +26,7 @@ export default defineManifest(({ mode }) => {
     ],
     permissions: ['storage', 'activeTab', 'contextMenus', 'scripting', 'identity'],
     host_permissions: ['<all_urls>'],
+    web_accessible_resources: [{ resources: ['public/icons/icon32.png'], matches: ['<all_urls>'] }],
     icons: {
       16: 'public/icons/icon16.png',
       32: 'public/icons/icon32.png',

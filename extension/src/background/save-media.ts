@@ -1,5 +1,9 @@
+import * as retryQueue from '../shared/retry-queue'
 import { uploadFile, UploadError } from '../shared/upload-api'
+import type { ExtensionMessage, ExtractPageResponse } from '../shared/types'
+import { buildPagePayload, IngestError, sendToIngest } from './ingest'
 
+const MENU_PAGE = 'mentat-save-page'
 const MENU_IMAGE = 'mentat-save-image'
 const MENU_PDF_LINK = 'mentat-save-pdf-link'
 const MENU_PDF_PAGE = 'mentat-save-pdf-page'
@@ -11,6 +15,11 @@ const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/tiff']
 export function registerMediaMenus() {
   chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.removeAll(() => {
+      chrome.contextMenus.create({
+        id: MENU_PAGE,
+        title: 'Save page to Mentat',
+        contexts: ['page', 'selection'],
+      })
       chrome.contextMenus.create({ id: MENU_IMAGE, title: 'Save image to Mentat', contexts: ['image'] })
       chrome.contextMenus.create({
         id: MENU_PDF_LINK,
@@ -27,7 +36,11 @@ export function registerMediaMenus() {
     })
   })
 
-  chrome.contextMenus.onClicked.addListener((info) => {
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    if (info.menuItemId === MENU_PAGE) {
+      if (tab?.id) void savePage(tab.id)
+      return
+    }
     const url =
       info.menuItemId === MENU_IMAGE
         ? info.srcUrl
@@ -45,6 +58,33 @@ function flashBadge(text: string, color: string) {
   void chrome.action.setBadgeBackgroundColor({ color })
   void chrome.action.setBadgeText({ text })
   setTimeout(() => void chrome.action.setBadgeText({ text: '' }), 3000)
+}
+
+// Extracts the page through the content script, then saves it like the popup button used to
+async function savePage(tabId: number) {
+  try {
+    // Throws on pages where content scripts can't run (chrome://, Web Store, PDF viewer, ...)
+    const extracted: ExtractPageResponse = await chrome.tabs.sendMessage(tabId, {
+      type: 'EXTRACT_PAGE',
+    } satisfies ExtensionMessage)
+    if (!extracted.ok) throw new Error(extracted.error)
+
+    const payload = buildPagePayload(extracted.page)
+    try {
+      await sendToIngest(payload)
+      flashBadge('✓', '#9cc49b')
+    } catch (e) {
+      if (e instanceof IngestError && e.retryable) {
+        await retryQueue.enqueue(payload, e.message)
+        flashBadge('…', '#e0c07a') // queued for a later retry
+      } else {
+        throw e
+      }
+    }
+  } catch (e) {
+    console.error('save page failed', e)
+    flashBadge('!', '#d98a7e')
+  }
 }
 
 function fileNameFor(url: string, type: string): string {
@@ -72,9 +112,9 @@ async function saveFromUrl(url: string, expectImage: boolean) {
     }
 
     await uploadFile(new File([blob], fileNameFor(url, type), { type }))
-    flashBadge('✓', '#16a34a')
+    flashBadge('✓', '#9cc49b')
   } catch (e) {
     console.error('save media failed', e)
-    flashBadge('!', '#dc2626')
+    flashBadge('!', '#d98a7e')
   }
 }
