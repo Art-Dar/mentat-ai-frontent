@@ -1,5 +1,5 @@
 import { getAuthToken, saveAuthToken } from './auth-storage'
-import { API_BASE_URL } from './config'
+import { API_BASE_URL, GOOGLE_WEB_CLIENT_ID } from './config'
 
 export const MIN_PASSWORD_LENGTH = 8
 
@@ -102,7 +102,31 @@ export async function setPassword(password: string): Promise<void> {
   if (!response.ok) throw new Error(`Could not set the password (status ${response.status})`)
 }
 
+// Opens Google's own sign-in page with an account chooser, so the user decides which account
+// to use instead of silently getting the one the browser profile is signed in with
+async function googleAccessTokenWithChooser(): Promise<string> {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_WEB_CLIENT_ID,
+    response_type: 'token',
+    redirect_uri: chrome.identity.getRedirectURL(),
+    scope: 'openid email profile',
+    prompt: 'select_account',
+  })
+  try {
+    const redirect = await chrome.identity.launchWebAuthFlow({
+      url: `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
+      interactive: true,
+    })
+    const token = new URLSearchParams(new URL(redirect ?? '').hash.slice(1)).get('access_token')
+    if (token) return token
+  } catch {
+    // fall through: the user closed the window, or the OAuth client is misconfigured
+  }
+  throw new Error('Google sign-in was cancelled or failed')
+}
+
 async function googleAccessToken(): Promise<string> {
+  if (GOOGLE_WEB_CLIENT_ID) return googleAccessTokenWithChooser()
   try {
     const { token } = await chrome.identity.getAuthToken({ interactive: true })
     if (token) return token
@@ -132,7 +156,8 @@ async function postGoogleToken(
       throw new Error('Could not reach the server')
     }
 
-    if (response.status !== 401) return { response, token }
+    // A fresh chooser would just ask the user again, so only the cached-token path retries
+    if (response.status !== 401 || GOOGLE_WEB_CLIENT_ID) return { response, token }
     await chrome.identity.removeCachedAuthToken({ token })
   }
   throw new Error('Google sign-in was rejected. Try again.')

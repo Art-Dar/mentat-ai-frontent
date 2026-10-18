@@ -43,7 +43,7 @@ function appendInline(parent: HTMLElement, text: string, sources: AskSource[]) {
     } else if (match[4]) {
       parent.append(link(match[5], match[6]))
     } else if (match[7]) {
-      const source = sources[Number(match[8]) - 1]
+      const source = sources.find((x) => x.marker === match[7])
       if (!source) {
         parent.append(match[7])
       } else {
@@ -164,24 +164,29 @@ function originalFileButton(documentId: string): HTMLElement {
   return holder
 }
 
+// Collapsible footnote list. Sources the answer cites come first; the rest are dimmed.
 export function renderSources(sources: AskSource[]): HTMLElement | null {
   if (!sources.length) return null
 
-  const wrapper = document.createElement('div')
-  wrapper.className = 'sources'
-  const heading = document.createElement('p')
-  heading.className = 'sources-title'
-  heading.textContent = 'Sources'
+  const details = document.createElement('details')
+  details.className = 'sources'
+  const summary = document.createElement('summary')
+  summary.textContent = `Sources (${sources.length})`
   const ol = document.createElement('ol')
+  ol.className = 'sources-list'
 
-  for (const source of sources) {
+  for (const source of [...sources].sort((a, b) => Number(b.cited) - Number(a.cited))) {
     const li = document.createElement('li')
+    li.className = source.cited ? '' : 'dim'
     const label = source.title || source.url || 'Untitled'
+    li.append(`${source.marker} `)
     if (isHttpUrl(source.url)) li.append(link(label, source.url))
-    else li.textContent = label
+    else li.append(label)
+    if (source.locator) li.append(` \u00b7 ${source.locator}`)
+    if (source.from_ocr) li.append(' \u00b7 scanned')
     if (source.document_id) li.append(' ', originalFileButton(source.document_id))
     ol.append(li)
   }
-  wrapper.append(heading, ol)
-  return wrapper
+  details.append(summary, ol)
+  return details
 }
