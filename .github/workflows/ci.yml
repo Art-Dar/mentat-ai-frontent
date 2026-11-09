@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: extension
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: extension/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+      - name: Package the built extension with the commit id
+        run: |
+          echo "$GITHUB_SHA" > dist/COMMIT
+          cd dist && zip -qr "../mentat-extension-${GITHUB_SHA::7}.zip" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mentat-extension-${{ github.sha }}
+          path: extension/mentat-extension-*.zip
+          retention-days: 14
